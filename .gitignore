@@ -39,3 +39,4 @@ nuget.exe
 .sonarqube/
 DotNetty.*.nuget.targets
 *.exe
+*.asta.lock
