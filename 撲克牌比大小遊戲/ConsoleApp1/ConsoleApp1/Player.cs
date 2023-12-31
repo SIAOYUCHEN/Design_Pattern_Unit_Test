@@ -1,61 +1,82 @@
 ﻿namespace ConsoleApp1;
 
-public class Player
+public abstract class Player
 {
+    protected int point;
+    protected Shutdown shutdown;
     private string name;
-    private List<Card> hand;
-    private int points;
-    private bool hasExchanged;
-    
-    public Player(string name)
+    private Hand hand = new Hand();
+    private ExchangeHands exchangeHands;
+
+    public TurnMove TakeTurn()
     {
-        this.name = name;
-        this.hand = new List<Card>();
-        this.points = 0;
-        this.hasExchanged = false;
-    }
-    
-    public void AddPoint()
-    {
-        points++;
+        var turnMove = new TurnMove(this, HasUsedExchangeHands() ? null : MakeExchangeHandsDecision(), ShowCard());
+        if (turnMove.GetExchangeHands() != null)
+        {
+            SetExchangeHands(turnMove.GetExchangeHands());
+        }
+        GetExchangeHands()?.Countdown();
+        return turnMove;
     }
 
-    public void ResetExchange()
-    {
-        hasExchanged = false;
-    }
-    
-    public void DrawHand(Deck deck)
-    {
-        for (int i = 0; i < 13; i++)
-        {
-            hand.Add(deck.DrawCard());
-        }
-    }
-    
-    public Card ShowCard()
-    {
-        if (hand.Count == 0)
-        {
-            throw new InvalidOperationException($"{name} has no more cards to play.");
-        }
-        
-        var rnd = new Random();
-        var card = hand[rnd.Next(hand.Count)];
-        hand.Remove(card);
-        return card;
-    }
-    
-    public void ExchangeHands(Player other)
-    {
-        if (!hasExchanged && !other.hasExchanged)
-        {
-            (hand, other.hand) = (other.hand, hand);
+    public abstract void NameSelf(int order);
 
-            hasExchanged = true;
-            other.hasExchanged = true;
+    protected abstract ExchangeHands MakeExchangeHandsDecision();
 
-            Console.WriteLine($"{name} has exchanged hands with {other.name}.");
-        }
+    protected abstract Card ShowCard();
+
+    public void SetShutdown(Shutdown shutdown)
+    {
+        this.shutdown = shutdown ?? throw new ArgumentNullException(nameof(shutdown));
+    }
+
+    public void AddHandCard(Card card)
+    {
+        hand.AddCard(card ?? throw new ArgumentNullException(nameof(card)));
+    }
+
+    public void SetName(string name)
+    {
+        this.name = name ?? throw new ArgumentNullException(nameof(name));
+    }
+
+    public void GainPoint()
+    {
+        point++;
+    }
+
+    public void SetExchangeHands(ExchangeHands exchangeHands)
+    {
+        this.exchangeHands = exchangeHands;
+    }
+
+    public bool HasUsedExchangeHands()
+    {
+        return exchangeHands != null;
+    }
+
+    public ExchangeHands GetExchangeHands()
+    {
+        return exchangeHands;
+    }
+
+    public Hand GetHand()
+    {
+        return hand;
+    }
+
+    public string GetName()
+    {
+        return name;
+    }
+
+    public void SetHand(Hand hand)
+    {
+        this.hand = hand ?? throw new ArgumentNullException(nameof(hand));
+    }
+
+    public int GetPoint()
+    {
+        return point;
     }
 }

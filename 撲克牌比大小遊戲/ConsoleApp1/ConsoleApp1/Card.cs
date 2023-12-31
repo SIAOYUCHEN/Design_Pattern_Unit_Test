@@ -1,29 +1,42 @@
 ﻿namespace ConsoleApp1;
 
-public class Card
+public class Card : IComparable<Card>
 {
-    private string rank;
-    private Suit suit;
+    public Suit Suit { get; }
+    public Rank Rank { get; }
 
-    public Card(string rank, Suit suit)
+    public Card(Suit suit, Rank rank)
     {
-        this.rank = rank;
-        this.suit = suit;
+        Suit = suit;
+        Rank = rank;
     }
-    
-    public static bool operator >(Card a, Card b)
+
+    public int CompareTo(Card other)
     {
-        var rankOrder = new List<string> { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
-        if (a.rank == b.rank)
+        if (other == null) return 1;
+
+        if (Rank == other.Rank)
         {
-            return a.suit > b.suit;
+            return Suit.CompareTo(other.Suit);
         }
-        
-        return rankOrder.IndexOf(a.rank) > rankOrder.IndexOf(b.rank);
+        return Rank.CompareTo(other.Rank);
     }
 
-    public static bool operator <(Card a, Card b)
+    public override string ToString()
     {
-        return b > a;
+        return $"{Suit}{Rank}";
     }
+}
+
+public enum Suit
+{
+    SPADE = '♠',
+    HEART = '♥',
+    DIAMOND = '♦',
+    CLUB = '♣'
+}
+
+public enum Rank
+{
+    R2 = 2, R3, R4, R5, R6, R7, R8, R9, R10, J = 11, Q, K, A = 14
 }

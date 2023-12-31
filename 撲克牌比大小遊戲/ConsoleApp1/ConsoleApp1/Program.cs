@@ -1,3 +1,15 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using ConsoleApp1;
 
-Console.WriteLine("Hello, World!");
+class Program
+{
+    static void Main(string[] args)
+    {
+        Deck deck = Deck.Standard52Cards();
+        List<Player> players = new List<Player> { new HumanPlayer(), new AI(), new AI(), new AI() };
+        Shutdown showdown = new Shutdown(deck, players);
+        showdown.Start();
+        
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadKey();
+    }
+}

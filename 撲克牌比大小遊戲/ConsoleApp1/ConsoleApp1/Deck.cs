@@ -2,37 +2,54 @@
 
 public class Deck
 {
-    private List<Card> cards;
+    private readonly Stack<Card> cardStack = new Stack<Card>();
 
-    public Deck()
+    public static Deck Standard52Cards()
     {
-        cards = new List<Card>();
-        var ranks = new List<string> { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
-
+        Deck deck = new Deck();
         foreach (Suit suit in Enum.GetValues(typeof(Suit)))
         {
-            foreach (var rank in ranks)
+            foreach (Rank rank in Enum.GetValues(typeof(Rank)))
             {
-                cards.Add(new Card(rank, suit));
+                deck.Push(new Card(suit, rank));
             }
         }
+        return deck;
+    }
+
+    public void Push(Card card)
+    {
+        cardStack.Push(card);
+    }
+
+    public Card Draw()
+    {
+        return cardStack.Pop();
     }
 
     public void Shuffle()
     {
-        var rnd = new Random();
-        cards = cards.OrderBy(card => rnd.Next()).ToList();
+        var cards = cardStack.ToArray();
+        cardStack.Clear();
+        Random rng = new Random();
+        int n = cards.Length;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            var value = cards[k];
+            cards[k] = cards[n];
+            cards[n] = value;
+        }
+
+        foreach (var card in cards)
+        {
+            cardStack.Push(card);
+        }
     }
 
-    public Card DrawCard()
+    public int Size
     {
-        if (cards.Count > 0)
-        {
-            var card = cards.First();
-            cards.RemoveAt(0);
-            return card;
-        }
-        
-        throw new InvalidOperationException("No more cards in the deck.");
+        get { return cardStack.Count; }
     }
 }
