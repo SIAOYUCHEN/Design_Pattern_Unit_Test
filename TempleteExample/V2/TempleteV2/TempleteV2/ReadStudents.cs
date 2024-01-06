@@ -1,4 +1,4 @@
-﻿namespace TempleteV1;
+﻿namespace TempleteV2;
 
 public class ReadStudents
 {
